@@ -1,0 +1,42 @@
+{
+  // These tasks will run in order when initializing your CodeSandbox project.
+  "setupTasks": [
+    {
+      "name": "Install Dependencies",
+      "command": "npm install"
+    }
+  ],
+
+  // These tasks can be run from CodeSandbox. Running one will open a log in the app.
+  "tasks": {
+    "dev": {
+      "name": "dev",
+      "command": "npm run dev",
+      "runAtStart": true
+    },
+    "build": {
+      "name": "build",
+      "command": "npm run build"
+    },
+    "lint": {
+      "name": "lint",
+      "command": "npm run lint"
+    },
+    "preview": {
+      "name": "preview",
+      "command": "npm run preview"
+    },
+    "@emotion/react": {
+      "name": "@mui/material",
+      "command": "@emotion/react"
+    },
+    "npm install @mui/material @emotion/react @emotion/styled": {
+      "name": "npm install @mui/material @emotion/react @emotion/styled",
+      "command": "npm install @mui/material @emotion/react @emotion/styled"
+    },
+    "npm install @apollo/client graphql": {
+      "name": "npm install @apollo/client graphql",
+      "command": "npm install @apollo/client graphql"
+    }
+  }
+}
