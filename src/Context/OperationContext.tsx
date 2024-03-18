@@ -40,7 +40,7 @@ export const OperationContext = ({ children }) => {
       const { result, details } = addResult.data.operations;
       setOperationStatus(result.statusCode);
       if (result.statusCode == 200) {
-        setUser(details);
+        // setUser(details);
         setAlertStatus({
           open: true,
           message: result.message,

@@ -11,6 +11,7 @@ mutation GetUser($email:String!) {
             id
             name
             email
+            image
             task {
                 id
                 task

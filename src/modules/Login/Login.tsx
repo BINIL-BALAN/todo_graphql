@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useMutation } from "@apollo/client";
-import { GetUser,AddUser } from "./GraphQl/Mutations";
+import { GetUser, AddUser } from "./GraphQl/Mutations";
 const Input = ({ label, name, value, setValue }) => {
   return (
     <TextField
@@ -34,6 +34,7 @@ const Input = ({ label, name, value, setValue }) => {
     />
   );
 };
+
 function Login() {
   const { setUser } = useContext(UserDetails);
   const [alertStatus, setAlertStatus] = useState({
@@ -41,23 +42,32 @@ function Login() {
     message: "",
     severity: "",
   });
+
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [email, setEmail] = useState("");
+  const [file, setFile] = useState({
+    name: "",
+    encoded: "",
+  });
   const [getUser, { loading }] = useMutation(GetUser);
-  const [addUser, { loading:saveLoading }] = useMutation(AddUser);
+  const [addUser, { loading: saveLoading }] = useMutation(AddUser);
+
   async function handleGetUser() {
     try {
       const result = await getUser({
         variables: {
-          email : email
+          email: email,
         },
       });
       console.log(result.data.getUser.result);
-      if(result.data.getUser.result.statusCode == 200){
-        setUser(result.data.getUser.details)
-        localStorage.setItem("user",JSON.stringify(result.data.getUser.details))
-      }else{
+      if (result.data.getUser.result.statusCode == 200) {
+        setUser(result.data.getUser.details);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(result.data.getUser.details)
+        );
+      } else {
         console.log(result.data.getUser.result.statusCode);
         setAlertStatus({
           show: true,
@@ -73,35 +83,49 @@ function Login() {
       });
     }
   }
-async function handleAddUser(){
+
+  async function handleAddUser() {
     try {
-        const result = await addUser({
-            variables:{
-                user:{id:newEmail,name:newName,email:newEmail,task:[]}
-            }
-        })
-        console.log(result);
-        if(result.data.result.statusCode == 200){
-          setAlertStatus({
-            show: true,
-            severity: "success",
-            message: "User added successfully",
-          })
-        }else{
-          setAlertStatus({
-            show: true,
-            severity: "error",
-            message: "Operation failed",
-          })
-        }
+      const result = await addUser({
+        variables: {
+          user: { id: newEmail, name: newName, email: newEmail, task: [],file },
+        },
+      });
+      console.log(result);
+      if (result.data.addUser.statusCode == 200) {
+        setAlertStatus({
+          show: true,
+          severity: "success",
+          message: "User added successfully",
+        });
+      } else {
+        setAlertStatus({
+          show: true,
+          severity: "error",
+          message: result.data.addUser.message,
+        });
+      }
     } catch (error) {
       setAlertStatus({
         show: true,
         severity: "error",
         message: "Something went wrong",
-      })   
+      });
     }
-}
+  }
+
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    const name = file.name;
+    setFile({ encoded:file, name });
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const encoded = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
   return (
     <div
       style={{
@@ -137,6 +161,8 @@ async function handleAddUser(){
           label="Enter email"
           name="email"
         />
+
+        <input type="file" onChange={handleFileChange} />
         <Button
           onClick={handleAddUser}
           fullWidth
@@ -162,12 +188,17 @@ async function handleAddUser(){
       >
         <Typography variant="h5">Get task</Typography>
         <Input setValue={setEmail} value={email} label="Email" name="email" />
-        <Button onClick={handleGetUser} fullWidth variant="contained" color="success">
+        <Button
+          onClick={handleGetUser}
+          fullWidth
+          variant="contained"
+          color="success"
+        >
           get
         </Button>
       </div>
       <Snackbar
-      sx={{width:"40%"}}
+        sx={{ width: "40%" }}
         open={alertStatus.show}
         autoHideDuration={2000}
         onClose={() => {
@@ -178,7 +209,11 @@ async function handleAddUser(){
         }}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert sx={{width:"100%"}} variant="filled" severity={alertStatus.severity}>
+        <Alert
+          sx={{ width: "100%" }}
+          variant="filled"
+          severity={alertStatus.severity}
+        >
           {alertStatus.message}
         </Alert>
       </Snackbar>
